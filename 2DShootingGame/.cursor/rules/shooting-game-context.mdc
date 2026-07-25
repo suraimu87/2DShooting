@@ -1,0 +1,32 @@
+---
+description: 2Dシューティング授業サンプルの設計方針と初心者・Copilot ガード
+alwaysApply: true
+---
+
+# 2DShootingGame — AI 作業ルール
+
+詳細はリポジトリ直下の `AGENTS.md`（特に §6）と `Shooting_BuildGuide.md` を読むこと。
+
+## 必守
+
+- 対象は Unity 初心者の学生向けサンプル。説明・コメントは日本語。
+- **ScriptableObject は使わない**（後の授業用）。enum + switch + Inspector 配列で管理。
+- 弾・敵移動・アイテムは同じパターン（種類 enum → switch → 専用関数）。
+- 追尾弾・敵追尾は発展課題。完成コードを実装して渡さない。
+- `EnemyCreater` / `BulletCreater` の綴りは変更しない。
+- Input は既存 `InputSystem_Actions` を使う（新規 Input Actions を増やさない）。
+- ユーザーが頼んでいないコミット・無関係リファクタはしない。
+
+## 学生・Copilot 向け初心者ガード
+
+- **非同期処理をしない**（`async`/`await`/`Task`、安易な Coroutine 禁止。待ちは Update のタイマー）
+- **エラーは日本語**で `Debug.LogWarning` / `Debug.LogError`
+- 処理に **初心者向けの日本語コメント** を付ける
+- 難易度の高い要求には、先に **簡単な代替案を提案** してから実装する
+- LINQ・複雑な継承・インターフェース多用・シングルトン複雑化は避ける
+
+## クリア／オーバー
+
+- GameOver: 被弾で表示。GameClear: 全 Wave 後かつ敵 0 かつ未被弾。
+- 結果画面表示時は `Player.enabled = false`（入力を UI に渡す）。
+- コントローラー UI は RetryButton を `EventSystem` で選択する。
