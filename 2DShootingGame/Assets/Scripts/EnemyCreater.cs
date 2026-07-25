@@ -1,3 +1,4 @@
+// 
 using UnityEngine;
 
 /// <summary>
@@ -27,7 +28,7 @@ public class EnemyCreater : MonoBehaviour
         [Header("動き・出現 Straight=直進 / SideWays=左右に揺れながら前進")]
         public Enemy.EnemyMoveType moveType;
 
-        [Header("出現方向 0=左 1=右 2=上 3=下 / -1=ランダム")]
+        [Header("出現方向 0=左 1=右 / -1=ランダム（注: 本プロジェクトは左右のみ出現します）")]
         public int spawnSide;
 
         [Header("Wave の敵を出し切ったあと、次の Wave まで待つ秒数")]
@@ -177,15 +178,30 @@ public class EnemyCreater : MonoBehaviour
             return;
         }
 
-        // 出現方向
+        // 出現方向: 本プロジェクトでは左右(0=左,1=右)のみ出現させる
+        int resolvedSpawnSide;
         if (wave.spawnSide < 0)
         {
-            enemy.spawnSide = Random.Range(0, 4);
+            // ランダムは左(0)か右(1)のみ
+            resolvedSpawnSide = Random.Range(0, 2);
         }
         else
         {
-            enemy.spawnSide = wave.spawnSide;
+            // Inspector に上(2)や下(3)が入っている場合は警告して左右に変換する
+            if (wave.spawnSide == 2 || wave.spawnSide == 3)
+            {
+                Debug.LogWarning("EnemyCreater: Wave の spawnSide に上/下(2/3)が設定されています。左右(0/1)に変換して出現させます。");
+                // 上(2)→左(0)、下(3)→右(1) に簡単にマップする（授業向けの簡潔な処理）
+                resolvedSpawnSide = (wave.spawnSide == 2) ? 0 : 1;
+            }
+            else
+            {
+                // 0 または 1 をそのまま使う
+                resolvedSpawnSide = Mathf.Clamp(wave.spawnSide, 0, 1);
+            }
         }
+
+        enemy.spawnSide = resolvedSpawnSide;
 
         // 移動パターン（プレハブの設定より Wave の指定を優先）
         enemy.moveType = wave.moveType;
